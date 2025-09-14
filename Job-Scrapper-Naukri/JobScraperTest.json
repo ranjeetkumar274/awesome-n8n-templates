@@ -1,0 +1,189 @@
+{
+  "name": "JobScraperTest",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -528,
+        336
+      ],
+      "id": "d98a4257-2304-4020-a3b1-9748867004c3",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+    "url": "https://api.apify.com/v2/datasets/3wBX0IrAIdddlW66q/items?token=HIDDEN_API_KEY",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {}
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -240,
+        400
+      ],
+      "id": "96dc0fc0-ecb0-4484-91e4-d7f9ce04b5f0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "87529b09-19ba-448c-a389-60b562a75802",
+              "name": "TelegramAlerts",
+              "value": "=✨ **New Job Opportunity!** ✨\n\n**Position:** {{ $json.title }}\n**Company:** {{ $json.companyName }}\n📍 **Location:** {{ $json.location }}\n💼 **Experience:** {{ $json.experienceText }}\n💰 **Salary:** {{ $json.salary }}\n\n🔗 **Apply Here:**\n{{ $json.jdURL }}\n\n_Notification sent on: {{ $now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', dateStyle: 'medium', timeStyle: 'short' }) }}_",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        288,
+        208
+      ],
+      "id": "14a5bb83-63aa-480c-8536-8034ddf92d31",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "chatId": "-1002867000315",
+        "text": "={{ $json.TelegramAlerts }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        560,
+        208
+      ],
+      "id": "da1c8120-badc-441f-a6cd-c59e48cb6910",
+      "name": "Send a text message",
+      "webhookId": "0492880b-d8ce-45ac-a834-0172fac8618a",
+      "credentials": {
+          "telegramApi": {
+            "id": "HIDDEN_API_KEY",
+            "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "amount": 30
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        576,
+        480
+      ],
+      "id": "4bed196d-a3ef-4c14-b926-abb6914508a1",
+      "name": "Wait",
+      "webhookId": "5048be5e-0f2c-4801-bb9e-8475e65c820e"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        64,
+        384
+      ],
+      "id": "a163a47a-35f6-4b60-b5a0-9d74dfbba97a",
+      "name": "Loop Over Items"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "eaaba0a1-d652-4c9b-9da2-2e9b0e26d1bd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "37b73d4423cc5b7ce64169fa9f73307f842ee4816ab4912e63af271f66002b8d"
+  },
+  "id": "HWa7xepinB1Pu1Mh",
+  "tags": []
+}
